@@ -1,0 +1,98 @@
+========================================================================
+       KEBUTUHAN FUNGSIONAL & NON-FUNGSIONAL SISTEM PENGOLAHAN NILAI
+========================================================================
+
+I. KEBUTUHAN FUNGSIONAL (Functional Requirements)
+------------------------------------------------------------------------
+Sistem ini menggunakan arsitektur MVC (Model-View-Controller) dengan OOP 
+serta wewenang pengguna (role-based access control) yang terbagi menjadi 
+3 peran: Admin, Guru, dan Siswa.
+
+A. Fitur Umum dan Autentikasi
+   1. Registrasi Akun: Pendaftaran akun baru bagi Guru dan Siswa.
+   2. Login Akun: Autentikasi pengguna berdasarkan Username dan Password 
+      serta identifikasi Role.
+   3. Logout Akun: Mengakhiri sesi pengguna dengan aman.
+   4. Keamanan Hak Akses (Filter): Pembatasan akses halaman menggunakan 
+      AuthFilter berdasarkan wewenang masing-masing role.
+   5. Dashboard Dinamis:
+      - Admin: Menampilkan grafik statistik, total siswa, total guru, 
+        serta tabel riwayat nilai terbaru.
+      - Guru & Siswa: Mengarahkan secara otomatis ke halaman yang relevan 
+        (Profil/Rapor).
+   6. Halaman Dokumen Rancangan: Menyajikan dokumentasi rancangan sistem.
+
+B. Fitur Role Admin (Manajemen Data Master)
+   1. Manajemen Data Siswa (CRUD):
+      - Melihat daftar lengkap seluruh siswa.
+      - Menambah data siswa baru (NIS, NISN, Nama, Kelas, Jenis Kelamin).
+      - Mengubah/mengedit data siswa jika terjadi kesalahan.
+      - Menghapus data siswa dari database.
+   2. Manajemen Data Guru (CRUD):
+      - Melihat daftar lengkap seluruh guru beserta mata pelajaran yang diampu.
+      - Menambah data guru baru (ID Guru, NIK, Nama, Jenis Kelamin, Mapel).
+      - Mengubah/mengedit data guru.
+      - Menghapus data guru dari database.
+
+C. Fitur Role Guru (Pengolahan Nilai & Profil)
+   1. Manajemen Data Diri (Profil):
+      - Melihat detail profil guru (NIK, Mapel, Pendidikan, dll).
+      - Mengubah foto profil dan informasi kontak secara mandiri.
+   2. Manajemen Nilai Siswa (CRUD):
+      - Menginput nilai mata pelajaran siswa yang diampu (Nilai Tugas, UTS, UAS).
+      - Menghitung Nilai Akhir secara otomatis berdasarkan bobot: 
+        Tugas (30%), UTS (30%), dan UAS (40%).
+      - Menentukan status kelulusan siswa per mata pelajaran berdasarkan KKM (75).
+      - Mengedit dan menghapus nilai yang telah diinput.
+   3. Laporan Rekapitulasi:
+      - Melihat rekap rata-rata nilai siswa dan status kelulusannya.
+   4. Tinjau Banding Nilai:
+      - Melihat daftar pengajuan banding/protes nilai dari siswa.
+      - Memberikan keputusan (Disetujui/Ditolak) beserta tanggapan/keterangan guru.
+
+D. Fitur Role Siswa (Profil, Rapor & Banding)
+   1. Manajemen Data Diri (Profil):
+      - Melihat detail profil siswa (NIS, Kelas, Alamat, Wali, dll).
+      - Mengubah foto profil, alamat, nama wali, nomor wali secara mandiri.
+   2. Lihat & Cetak Rapor:
+      - Melihat laporan hasil belajar (Rapor) per semester secara real-time.
+      - Mencetak rapor dengan tata letak ramah cetak (print layout CSS).
+   3. Pengajuan Banding Nilai:
+      - Mengajukan keberatan/protes terhadap nilai mata pelajaran tertentu 
+        dengan menyertakan alasan.
+      - Melihat riwayat pengajuan banding beserta status persetujuan dan 
+        tanggapan guru.
+
+
+II. KEBUTUHAN NON-FUNGSIONAL (Non-Functional Requirements / Software Stack)
+------------------------------------------------------------------------
+Berikut adalah daftar perangkat lunak (software) dan teknologi yang digunakan 
+dalam pengembangan serta pengoperasian sistem ini:
+
+A. Sisi Server (Back-end)
+   1. Bahasa Pemrograman: PHP versi 8.2 atau lebih tinggi.
+   2. Framework Web: CodeIgniter 4 (versi ^4.7).
+   3. Database Management System (DBMS): MySQL atau MariaDB.
+   4. Database Driver/Library: mysqlnd (MySQL Native Driver) PHP Extension.
+   5. Ekstensi PHP Wajib:
+      - PHP Extension 'intl' (untuk kebutuhan framework CI4).
+      - PHP Extension 'mbstring' (untuk manipulasi string multibyte).
+      - PHP Extension 'json' (untuk parsing data JSON).
+
+B. Sisi Klien (Front-end)
+   1. Markup & Styling: HTML5 dan Vanilla CSS3 (tanpa framework eksternal 
+      seperti Tailwind, menggunakan custom stylesheet).
+   2. Logika Frontend: Javascript Vanilla (untuk interaksi antarmuka dasar).
+   3. Library Ikon: FontAwesome CDN (versi 6.4.0) untuk rendering ikon.
+   4. Media Pendukung: Upload Foto Profil (Mime-type: image/jpg, jpeg, png; 
+      Maksimal ukuran: 2MB).
+
+C. Lingkungan Pengembangan & Pengujian (Development & Testing Environment)
+   1. Local Web Server: Apache HTTP Server (dibundel via XAMPP) atau PHP 
+      Development Server (`php spark serve`).
+   2. Dependency Manager: Composer (untuk pengelolaan pustaka php).
+   3. Testing Tools:
+      - PHPUnit (versi 10.5.16 atau kompatibel) untuk pengujian unit.
+      - Mikey179/vfsstream (untuk virtual file system testing).
+      - FakerPHP/Faker (untuk generator dummy data testing).
+   4. Web Browser: Google Chrome, Mozilla Firefox, Microsoft Edge, dll.

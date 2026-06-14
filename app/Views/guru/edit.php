@@ -52,13 +52,69 @@ $session_errors = session()->getFlashdata('errors');
                 <?php endif; ?>
             </div>
 
-            <!-- Mata Pelajaran Field -->
-            <div class="form-group">
-                <label for="mata_pelajaran">Mata Pelajaran</label>
-                <input type="text" name="mata_pelajaran" id="mata_pelajaran" class="form-control <?= (isset($session_errors['mata_pelajaran'])) ? 'is-invalid' : '' ?>" value="<?= old('mata_pelajaran', $guru['mata_pelajaran']) ?>" placeholder="Contoh: Matematika" required>
-                <?php if (isset($session_errors['mata_pelajaran'])): ?>
-                    <div class="invalid-feedback"><?= $session_errors['mata_pelajaran'] ?></div>
+            <!-- Pemetaan Mapel & Kelas Diajar -->
+            <div class="form-group" style="margin-bottom: 2rem;">
+                <label style="font-weight: 600; font-size: 1rem; color: var(--text-main); margin-bottom: 0.5rem; display: block;">Pemetaan Mata Pelajaran & Kelas yang Diajar</label>
+                <p style="font-size: 0.85rem; color: var(--text-muted); margin-top: -0.25rem; margin-bottom: 1rem;">Tentukan mata pelajaran yang diajar untuk setiap kelas secara spesifik (Contoh: IPA di Kelas 2, PJOK di Kelas 4).</p>
+
+                <?php if (isset($session_errors['mappings'])): ?>
+                    <div class="alert alert-danger" style="margin-bottom: 1rem; padding: 0.75rem 1rem; border-radius: var(--border-radius-md); font-size: 0.85rem; color: var(--danger); background-color: rgba(239, 68, 68, 0.05); border: 1px solid rgba(239, 68, 68, 0.2);">
+                        <i class="fa-solid fa-circle-exclamation" style="margin-right: 0.5rem;"></i> <?= $session_errors['mappings'] ?>
+                    </div>
                 <?php endif; ?>
+
+                <div id="mapping-container" style="display: flex; flex-direction: column; gap: 0.75rem;">
+                    <?php 
+                    $oldMapels = old('mapped_mapel');
+                    $oldKelases = old('mapped_kelas');
+                    $mapelOptions = ['Matematika', 'IPA', 'Bahasa Indonesia', 'PJOK', 'PKN'];
+                    
+                    if ($oldMapels === null) {
+                        $oldMapels = [];
+                        $oldKelases = [];
+                        foreach ($mappings as $m) {
+                            $oldMapels[] = $m['mata_pelajaran'];
+                            $oldKelases[] = $m['kelas'];
+                        }
+                    }
+
+                    if (empty($oldMapels)) {
+                        $oldMapels = [''];
+                        $oldKelases = [''];
+                    }
+
+                    for ($i = 0; $i < count($oldMapels); $i++):
+                        $selectedMapel = $oldMapels[$i];
+                        $selectedKelas = $oldKelases[$i];
+                    ?>
+                        <div class="mapping-row" style="display: flex; align-items: center; gap: 1rem; background: rgba(0,0,0,0.02); padding: 0.75rem; border-radius: var(--border-radius-md); border: 1px solid var(--border-color);">
+                            <div style="flex: 1;">
+                                <select name="mapped_mapel[]" class="form-control" required style="width: 100%;">
+                                    <option value="" disabled <?= empty($selectedMapel) ? 'selected' : '' ?>>-- Pilih Mapel --</option>
+                                    <?php foreach ($mapelOptions as $mo): ?>
+                                        <option value="<?= $mo ?>" <?= $selectedMapel === $mo ? 'selected' : '' ?>><?= $mo ?></option>
+                                    <?php endforeach; ?>
+                                </select>
+                            </div>
+                            <div style="flex: 1;">
+                                <select name="mapped_kelas[]" class="form-control" required style="width: 100%;">
+                                    <option value="" disabled <?= empty($selectedKelas) ? 'selected' : '' ?>>-- Pilih Kelas --</option>
+                                    <?php for ($k = 1; $k <= 6; $k++): ?>
+                                        <option value="<?= $k ?>" <?= (string)$selectedKelas === (string)$k ? 'selected' : '' ?>>Kelas <?= $k ?></option>
+                                    <?php endfor; ?>
+                                </select>
+                            </div>
+                            <button type="button" class="btn btn-secondary btn-sm btn-remove-mapping" style="padding: 0.5rem; background-color: transparent; border: 1px solid var(--border-color); color: var(--danger); width: 38px; height: 38px; display: flex; align-items: center; justify-content: center; transition: all 0.2s; border-radius: var(--border-radius-sm);" onclick="removeMappingRow(this)">
+                                <i class="fa-solid fa-trash-can"></i>
+                            </button>
+                        </div>
+                    <?php endfor; ?>
+                </div>
+
+                <button type="button" class="btn btn-secondary btn-sm" id="btn-add-mapping" style="margin-top: 1rem; display: inline-flex; align-items: center; gap: 0.5rem; padding: 0.5rem 1rem; font-size: 0.85rem; border-radius: var(--border-radius-md);">
+                    <i class="fa-solid fa-plus"></i>
+                    <span>Tambah Pemetaan</span>
+                </button>
             </div>
 
             <!-- Status Kepegawaian Field -->
@@ -94,4 +150,29 @@ $session_errors = session()->getFlashdata('errors');
     </div>
 </div>
 
+<script>
+function removeMappingRow(btn) {
+    const container = document.getElementById('mapping-container');
+    if (container.querySelectorAll('.mapping-row').length > 1) {
+        btn.closest('.mapping-row').remove();
+    } else {
+        alert('Minimal harus ada satu pemetaan mata pelajaran & kelas.');
+    }
+}
+
+document.getElementById('btn-add-mapping').addEventListener('click', function() {
+    const container = document.getElementById('mapping-container');
+    const firstRow = container.querySelector('.mapping-row');
+    const newRow = firstRow.cloneNode(true);
+    
+    // Reset selections
+    newRow.querySelectorAll('select').forEach(sel => {
+        sel.value = "";
+    });
+    
+    container.appendChild(newRow);
+});
+</script>
+
 <?= $this->endSection() ?>
+

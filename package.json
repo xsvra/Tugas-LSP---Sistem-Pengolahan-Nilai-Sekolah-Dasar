@@ -1,0 +1,28 @@
+{
+  "name": "sistem-nilai",
+  "version": "1.0.0",
+  "description": "CodeIgniter is a PHP full-stack web framework that is light, fast, flexible and secure. More information can be found at the [official site](https://codeigniter.com).",
+  "main": "index.js",
+  "directories": {
+    "test": "tests"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "build": "npx tailwindcss -i ./app/Views/tailwind-input.css -o ./public/css/style.css --minify",
+    "watch": "npx tailwindcss -i ./app/Views/tailwind-input.css -o ./public/css/style.css --watch"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/xsvra/Tugas-LSP---Sistem-Pengolahan-Nilai-Sekolah-Dasar.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/xsvra/Tugas-LSP---Sistem-Pengolahan-Nilai-Sekolah-Dasar/issues"
+  },
+  "homepage": "https://github.com/xsvra/Tugas-LSP---Sistem-Pengolahan-Nilai-Sekolah-Dasar#readme",
+  "devDependencies": {
+    "tailwindcss": "3.4"
+  }
+}

@@ -6,6 +6,7 @@ DROP TABLE IF EXISTS banding_nilai;
 DROP TABLE IF EXISTS nilai;
 DROP TABLE IF EXISTS users;
 DROP TABLE IF EXISTS siswa;
+DROP TABLE IF EXISTS guru_mapel_kelas;
 DROP TABLE IF EXISTS guru;
 
 -- Tabel Siswa
@@ -30,7 +31,7 @@ CREATE TABLE siswa (
 
 -- Tabel Guru
 CREATE TABLE guru (
-    id_guru INT AUTO_INCREMENT PRIMARY KEY,
+    id_guru INT PRIMARY KEY,
     nik VARCHAR(20) NOT NULL DEFAULT '',
     nama_guru VARCHAR(100) NOT NULL,
     jenis_kelamin ENUM('L', 'P') NOT NULL DEFAULT 'L',
@@ -39,14 +40,27 @@ CREATE TABLE guru (
     alamat TEXT DEFAULT NULL,
     no_hp VARCHAR(20) DEFAULT NULL,
     email VARCHAR(100) DEFAULT NULL,
-    mata_pelajaran VARCHAR(100) NOT NULL,
+    mata_pelajaran VARCHAR(255) NOT NULL,
+    kelas_diajar VARCHAR(255) DEFAULT NULL,
     pendidikan_terakhir VARCHAR(50) DEFAULT NULL,
     status_kepegawaian VARCHAR(50) DEFAULT NULL,
     tanggal_masuk DATE DEFAULT NULL,
     foto VARCHAR(255) DEFAULT NULL,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
-) AUTO_INCREMENT = 1;
+);
+
+-- Tabel Pemetaan Mapel & Kelas Guru
+CREATE TABLE guru_mapel_kelas (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    id_guru INT NOT NULL,
+    mata_pelajaran VARCHAR(100) NOT NULL,
+    kelas VARCHAR(10) NOT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    FOREIGN KEY (id_guru) REFERENCES guru(id_guru) ON DELETE CASCADE,
+    UNIQUE KEY uq_mapel_kelas (mata_pelajaran, kelas)
+);
 
 -- Tabel Users
 CREATE TABLE users (
@@ -63,6 +77,7 @@ CREATE TABLE nilai (
     id INT AUTO_INCREMENT PRIMARY KEY,
     nis VARCHAR(20) NOT NULL,
     id_guru INT NOT NULL,
+    mata_pelajaran VARCHAR(100) NOT NULL,
     nilai_tugas DECIMAL(5,2) NOT NULL DEFAULT 0.00,
     nilai_uts DECIMAL(5,2) NOT NULL DEFAULT 0.00,
     nilai_uas DECIMAL(5,2) NOT NULL DEFAULT 0.00,

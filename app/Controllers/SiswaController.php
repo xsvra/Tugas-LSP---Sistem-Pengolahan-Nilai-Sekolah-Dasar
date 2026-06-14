@@ -19,9 +19,20 @@ class SiswaController extends BaseController
 
     public function create()
     {
+        $tahun = date('Y');
+        $year2 = substr($tahun, -2);
+        $prefix = $year2 . '19103';
+
         $db = \Config\Database::connect();
-        $query = $db->query("SELECT COALESCE(MAX(CAST(nis AS UNSIGNED)), 100) + 1 AS next_nis FROM siswa");
-        $nextNis = $query->getRow()->next_nis;
+        $query = $db->query("SELECT nis FROM siswa WHERE nis LIKE '$prefix%' AND LENGTH(nis) = 10 ORDER BY nis DESC LIMIT 1");
+        $row = $query->getRow();
+        if ($row) {
+            $lastSeq = intval(substr($row->nis, 7));
+            $nextSeq = $lastSeq + 1;
+        } else {
+            $nextSeq = 1;
+        }
+        $nextNis = $prefix . sprintf('%03d', $nextSeq);
 
         $data = [
             'title' => 'Tambah Siswa',
@@ -31,6 +42,27 @@ class SiswaController extends BaseController
         return view('siswa/create', $data);
     }
 
+    public function getNextNis()
+    {
+        $tahun_masuk = $this->request->getGet('tahun_masuk');
+        if (empty($tahun_masuk) || !is_numeric($tahun_masuk) || strlen($tahun_masuk) !== 4) {
+            return $this->response->setJSON(['nis' => '']);
+        }
+        $year2 = substr($tahun_masuk, -2);
+        $prefix = $year2 . '19103';
+        $db = \Config\Database::connect();
+        $query = $db->query("SELECT nis FROM siswa WHERE nis LIKE '$prefix%' AND LENGTH(nis) = 10 ORDER BY nis DESC LIMIT 1");
+        $row = $query->getRow();
+        if ($row) {
+            $lastSeq = intval(substr($row->nis, 7));
+            $nextSeq = $lastSeq + 1;
+        } else {
+            $nextSeq = 1;
+        }
+        $nextNis = $prefix . sprintf('%03d', $nextSeq);
+        return $this->response->setJSON(['nis' => $nextNis]);
+    }
+
     public function store()
     {
         $db = \Config\Database::connect();
@@ -38,19 +70,55 @@ class SiswaController extends BaseController
         $userModel = new UserModel();
 
         $rules = [
-            'nis'                 => 'required|min_length[3]|max_length[20]|is_unique[siswa.nis]',
+            'nis'                 => 'required|numeric|exact_length[10]|is_unique[siswa.nis]',
+            'nisn'                => 'required|numeric|exact_length[10]|is_unique[siswa.nisn]',
+            'nama'                => 'required|min_length[2]|max_length[100]',
             'username'            => 'required|alpha_numeric_space|min_length[3]|max_length[50]|is_unique[users.username]',
             'password'            => 'required|min_length[6]',
             'konfirmasi_password' => 'required|matches[password]',
             'kelas'               => 'required|in_list[1,2,3,4,5,6]',
-            'status_siswa'        => 'required'
+            'status_siswa'        => 'required',
+            'tahun_masuk'         => 'required|exact_length[4]|numeric',
+            'tanggal_lahir'       => 'required|valid_date[Y-m-d]'
         ];
 
-        if (!$this->validate($rules)) {
+        $messages = [
+            'nis' => [
+                'is_unique' => 'NIS sudah terdaftar di database.'
+            ],
+            'nisn' => [
+                'is_unique' => 'NISN sudah terdaftar di database.'
+            ],
+            'username' => [
+                'is_unique' => 'Username ini sudah digunakan.'
+            ]
+        ];
+
+        if (!$this->validate($rules, $messages)) {
             return redirect()->back()->withInput()->with('errors', $this->validator->getErrors());
         }
 
         $nis = $this->request->getPost('nis');
+        $nisn = $this->request->getPost('nisn');
+        $tahun_masuk = $this->request->getPost('tahun_masuk');
+        $tanggal_lahir = $this->request->getPost('tanggal_lahir');
+
+        $errors = [];
+        $year2 = substr($tahun_masuk, -2);
+        if (substr($nis, 0, 7) !== $year2 . '19103') {
+            $errors['nis'] = "Format NIS tidak valid. Harus dimulai dengan {$year2}19103 diikuti 3 digit nomor urut.";
+        }
+
+        $birthYear = date('Y', strtotime($tanggal_lahir));
+        $birthPrefix = substr($birthYear, -3);
+        if (substr($nisn, 0, 3) !== $birthPrefix) {
+            $errors['nisn'] = "Format NISN tidak valid. Harus dimulai dengan {$birthPrefix} (3 digit terakhir tahun lahir {$birthYear}).";
+        }
+
+        if (!empty($errors)) {
+            return redirect()->back()->withInput()->with('errors', $errors);
+        }
+
         $username = $this->request->getPost('username');
         $password = password_hash($this->request->getPost('password'), PASSWORD_BCRYPT);
 
@@ -59,10 +127,12 @@ class SiswaController extends BaseController
         // 1. Simpan Siswa
         $siswaModel->save([
             'nis'           => $nis,
-            'nisn'          => '0000000000',
-            'nama'          => $username, // Default name is username
+            'nisn'          => $nisn,
+            'nama'          => $this->request->getPost('nama'),
             'kelas'         => $this->request->getPost('kelas'),
-            'jenis_kelamin' => 'L', // Default L
+            'jenis_kelamin' => 'L', // Default L, can edit in profile
+            'tahun_masuk'   => $tahun_masuk,
+            'tanggal_lahir' => $tanggal_lahir,
             'status_siswa'  => $this->request->getPost('status_siswa')
         ]);
 
@@ -112,17 +182,44 @@ class SiswaController extends BaseController
         $rules = [
             'nama'          => 'required|min_length[2]|max_length[100]',
             'kelas'         => 'required|in_list[1,2,3,4,5,6]',
-            'status_siswa'  => 'required'
+            'status_siswa'  => 'required',
+            'nisn'          => "required|numeric|exact_length[10]|is_unique[siswa.nisn,id_siswa,{$siswa['id_siswa']}]",
+            'tahun_masuk'   => 'required|exact_length[4]|numeric',
+            'tanggal_lahir' => 'required|valid_date[Y-m-d]'
         ];
 
-        if (!$this->validate($rules)) {
+        $messages = [
+            'nisn' => [
+                'is_unique' => 'NISN sudah terdaftar di database.'
+            ]
+        ];
+
+        if (!$this->validate($rules, $messages)) {
             return redirect()->back()->withInput()->with('errors', $this->validator->getErrors());
+        }
+
+        $nisn = $this->request->getPost('nisn');
+        $tahun_masuk = $this->request->getPost('tahun_masuk');
+        $tanggal_lahir = $this->request->getPost('tanggal_lahir');
+
+        $errors = [];
+        $birthYear = date('Y', strtotime($tanggal_lahir));
+        $birthPrefix = substr($birthYear, -3);
+        if (substr($nisn, 0, 3) !== $birthPrefix) {
+            $errors['nisn'] = "Format NISN tidak valid. Harus dimulai dengan {$birthPrefix} (3 digit terakhir tahun lahir {$birthYear}).";
+        }
+
+        if (!empty($errors)) {
+            return redirect()->back()->withInput()->with('errors', $errors);
         }
 
         $siswaModel->update($siswa['id_siswa'], [
             'nama'          => $this->request->getPost('nama'),
             'kelas'         => $this->request->getPost('kelas'),
-            'status_siswa'  => $this->request->getPost('status_siswa')
+            'status_siswa'  => $this->request->getPost('status_siswa'),
+            'nisn'          => $nisn,
+            'tahun_masuk'   => $tahun_masuk,
+            'tanggal_lahir' => $tanggal_lahir
         ]);
 
         return redirect()->to('/siswa')->with('success', 'Data siswa berhasil diperbarui.');
@@ -162,7 +259,8 @@ class SiswaController extends BaseController
         $siswa = $siswaModel->where('nis', $nis)->first();
 
         if (!$siswa) {
-            return redirect()->to('/')->with('error', 'Data siswa tidak ditemukan.');
+            session()->destroy();
+            return redirect()->to('/login')->with('error', 'Data siswa tidak ditemukan. Silakan login kembali.');
         }
 
         $data = [
@@ -191,10 +289,10 @@ class SiswaController extends BaseController
             'nama'          => 'required|min_length[2]|max_length[100]',
             'jenis_kelamin' => 'required|in_list[L,P]',
             'tempat_lahir'  => 'permit_empty|max_length[100]',
-            'tanggal_lahir' => 'permit_empty|valid_date[Y-m-d]',
+            'tanggal_lahir' => 'required|valid_date[Y-m-d]',
             'alamat'        => 'permit_empty',
             'kelas'         => 'required|in_list[1,2,3,4,5,6]',
-            'tahun_masuk'   => 'permit_empty|exact_length[4]|numeric',
+            'tahun_masuk'   => 'required|exact_length[4]|numeric',
             'nama_wali'     => 'permit_empty|max_length[100]',
             'no_hp_wali'    => 'permit_empty|max_length[20]',
             'status_siswa'  => 'permit_empty|max_length[50]'
@@ -207,6 +305,25 @@ class SiswaController extends BaseController
 
         if (!$this->validate($rules)) {
             return redirect()->back()->withInput()->with('errors', $this->validator->getErrors());
+        }
+
+        $tanggal_lahir = $this->request->getPost('tanggal_lahir');
+        $tahun_masuk = $this->request->getPost('tahun_masuk');
+
+        $errors = [];
+        $birthYear = date('Y', strtotime($tanggal_lahir));
+        $birthPrefix = substr($birthYear, -3);
+        if (substr($siswa['nisn'], 0, 3) !== $birthPrefix) {
+            $errors['tanggal_lahir'] = "Tanggal lahir tidak sesuai dengan 3 digit awal NISN Anda ({$siswa['nisn']}). Tahun lahir harus {$birthYear} (awalan {$birthPrefix}).";
+        }
+
+        $year2 = substr($tahun_masuk, -2);
+        if (substr($siswa['nis'], 0, 2) !== $year2) {
+            $errors['tahun_masuk'] = "Tahun masuk tidak sesuai dengan 2 digit awal NIS Anda ({$siswa['nis']}). Tahun masuk harus {$tahun_masuk} (awalan {$year2}).";
+        }
+
+        if (!empty($errors)) {
+            return redirect()->back()->withInput()->with('errors', $errors);
         }
 
         $fotoName = $siswa['foto'];
@@ -229,10 +346,10 @@ class SiswaController extends BaseController
             'nama'          => $this->request->getPost('nama'),
             'jenis_kelamin' => $this->request->getPost('jenis_kelamin'),
             'tempat_lahir'  => $this->request->getPost('tempat_lahir'),
-            'tanggal_lahir' => $this->request->getPost('tanggal_lahir') ?: null,
+            'tanggal_lahir' => $tanggal_lahir,
             'alamat'        => $this->request->getPost('alamat'),
             'kelas'         => $this->request->getPost('kelas'),
-            'tahun_masuk'   => $this->request->getPost('tahun_masuk'),
+            'tahun_masuk'   => $tahun_masuk,
             'nama_wali'     => $this->request->getPost('nama_wali'),
             'no_hp_wali'    => $this->request->getPost('no_hp_wali'),
             'status_siswa'  => $this->request->getPost('status_siswa') ?: 'Aktif',

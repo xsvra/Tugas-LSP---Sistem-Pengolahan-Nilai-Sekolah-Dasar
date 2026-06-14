@@ -19,6 +19,7 @@
                         <th>ID Guru</th>
                         <th>Nama Guru</th>
                         <th>Mata Pelajaran</th>
+                        <th>Kelas</th>
                         <th>Waktu Ditambahkan</th>
                         <th style="width: 150px; text-align: center;">Aksi</th>
                     </tr>
@@ -26,14 +27,27 @@
                 <tbody>
                     <?php if (empty($guru)): ?>
                         <tr>
-                            <td colspan="5" style="text-align: center; color: var(--text-muted); padding: 2rem;">Belum ada data guru. Silakan klik Tambah Guru.</td>
+                            <td colspan="6" style="text-align: center; color: var(--text-muted); padding: 2rem;">Belum ada data guru. Silakan klik Tambah Guru.</td>
                         </tr>
                     <?php else: ?>
                         <?php foreach ($guru as $g): ?>
                             <tr>
                                 <td style="font-weight: 700; color: var(--primary);"><?= esc($g['id_guru']) ?></td>
                                 <td style="font-weight: 600;"><?= esc($g['nama_guru']) ?></td>
-                                <td><span class="badge badge-success"><?= esc($g['mata_pelajaran']) ?></span></td>
+                                <td>
+                                    <?php if ($g['mapel_mapped']): ?>
+                                        <span class="badge badge-success"><?= esc($g['mapel_mapped']) ?></span>
+                                    <?php else: ?>
+                                        <span class="badge badge-secondary" style="background-color: #e2e8f0; color: #718096;">Belum diatur</span>
+                                    <?php endif; ?>
+                                </td>
+                                <td>
+                                    <?php if ($g['kelas_mapped']): ?>
+                                        <span class="badge badge-primary" style="background-color: rgba(99, 102, 241, 0.1); color: var(--primary); border: 1px solid rgba(99, 102, 241, 0.2);">Kelas <?= esc($g['kelas_mapped']) ?></span>
+                                    <?php else: ?>
+                                        <span class="badge badge-secondary" style="background-color: #e2e8f0; color: #718096;">Belum diatur</span>
+                                    <?php endif; ?>
+                                </td>
                                 <td style="font-size: 0.85rem; color: var(--text-muted);"><?= esc($g['created_at']) ?></td>
                                 <td>
                                     <div class="btn-group" style="justify-content: center;">

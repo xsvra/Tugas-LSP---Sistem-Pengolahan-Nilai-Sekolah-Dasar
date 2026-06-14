@@ -16,10 +16,46 @@ $session_errors = session()->getFlashdata('errors');
         <form action="<?= base_url('/siswa/store') ?>" method="post">
             <?= csrf_field() ?>
 
+            <!-- Nama Field -->
+            <div class="form-group">
+                <label for="nama">Nama Lengkap Siswa</label>
+                <input type="text" name="nama" id="nama" class="form-control <?= (isset($session_errors['nama'])) ? 'is-invalid' : '' ?>" value="<?= old('nama') ?>" placeholder="Contoh: Ani Wijaya" required>
+                <?php if (isset($session_errors['nama'])): ?>
+                    <div class="invalid-feedback"><?= $session_errors['nama'] ?></div>
+                <?php endif; ?>
+            </div>
+
+            <!-- Tanggal Lahir Field -->
+            <div class="form-group">
+                <label for="tanggal_lahir">Tanggal Lahir</label>
+                <input type="date" name="tanggal_lahir" id="tanggal_lahir" class="form-control <?= (isset($session_errors['tanggal_lahir'])) ? 'is-invalid' : '' ?>" value="<?= old('tanggal_lahir') ?>" required>
+                <?php if (isset($session_errors['tanggal_lahir'])): ?>
+                    <div class="invalid-feedback"><?= $session_errors['tanggal_lahir'] ?></div>
+                <?php endif; ?>
+            </div>
+
+            <!-- Tahun Masuk Field -->
+            <div class="form-group">
+                <label for="tahun_masuk">Tahun Masuk</label>
+                <input type="number" name="tahun_masuk" id="tahun_masuk" class="form-control <?= (isset($session_errors['tahun_masuk'])) ? 'is-invalid' : '' ?>" value="<?= old('tahun_masuk', date('Y')) ?>" placeholder="Contoh: 2026" required>
+                <?php if (isset($session_errors['tahun_masuk'])): ?>
+                    <div class="invalid-feedback"><?= $session_errors['tahun_masuk'] ?></div>
+                <?php endif; ?>
+            </div>
+
+            <!-- NISN Field -->
+            <div class="form-group">
+                <label for="nisn">Nomor Induk Siswa Nasional (NISN)</label>
+                <input type="text" name="nisn" id="nisn" class="form-control <?= (isset($session_errors['nisn'])) ? 'is-invalid' : '' ?>" value="<?= old('nisn') ?>" placeholder="Masukkan 10 digit NISN (Manual)" required>
+                <?php if (isset($session_errors['nisn'])): ?>
+                    <div class="invalid-feedback"><?= $session_errors['nisn'] ?></div>
+                <?php endif; ?>
+            </div>
+
             <!-- NIS Field -->
             <div class="form-group">
                 <label for="nis">Nomor Induk Siswa (NIS)</label>
-                <input type="text" name="nis" id="nis" class="form-control <?= (isset($session_errors['nis'])) ? 'is-invalid' : '' ?>" value="<?= old('nis', $nextNis) ?>" placeholder="Contoh: 101 atau 2026A001" required>
+                <input type="text" name="nis" id="nis" class="form-control <?= (isset($session_errors['nis'])) ? 'is-invalid' : '' ?>" value="<?= old('nis', $nextNis) ?>" placeholder="Contoh: 2619103001 (Otomatis)" required>
                 <?php if (isset($session_errors['nis'])): ?>
                     <div class="invalid-feedback"><?= $session_errors['nis'] ?></div>
                 <?php endif; ?>
@@ -98,5 +134,20 @@ $session_errors = session()->getFlashdata('errors');
         </form>
     </div>
 </div>
+
+<script>
+document.getElementById('tahun_masuk').addEventListener('input', function() {
+    const val = this.value;
+    if (val.length === 4 && !isNaN(val)) {
+        fetch('<?= base_url('/siswa/get-next-nis') ?>?tahun_masuk=' + val)
+            .then(res => res.json())
+            .then(data => {
+                if (data.nis) {
+                    document.getElementById('nis').value = data.nis;
+                }
+            });
+    }
+});
+</script>
 
 <?= $this->endSection() ?>

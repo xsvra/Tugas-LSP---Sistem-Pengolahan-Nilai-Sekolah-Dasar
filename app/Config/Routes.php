@@ -23,6 +23,7 @@ $routes->group('', ['filter' => 'auth:admin'], function($routes) {
     $routes->group('siswa', function($routes) {
         $routes->get('/', 'SiswaController::index');
         $routes->get('create', 'SiswaController::create');
+        $routes->get('get-next-nis', 'SiswaController::getNextNis');
         $routes->post('store', 'SiswaController::store');
         $routes->get('edit/(:any)', 'SiswaController::edit/$1');
         $routes->post('update/(:any)', 'SiswaController::update/$1');
@@ -50,6 +51,7 @@ $routes->group('', ['filter' => 'auth:guru'], function($routes) {
     $routes->group('nilai', function($routes) {
         $routes->get('/', 'NilaiController::index');
         $routes->get('create', 'NilaiController::create');
+        $routes->get('siswa-by-kelas/(:num)', 'NilaiController::getSiswaByKelas/$1');
         $routes->post('store', 'NilaiController::store');
         $routes->get('edit/(:num)', 'NilaiController::edit/$1');
         $routes->post('update/(:num)', 'NilaiController::update/$1');

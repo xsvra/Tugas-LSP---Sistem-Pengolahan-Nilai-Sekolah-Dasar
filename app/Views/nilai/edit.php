@@ -31,6 +31,12 @@ $session_errors = session()->getFlashdata('errors');
                 <?php endif; ?>
             </div>
 
+            <!-- Mata Pelajaran (Read-only) -->
+            <div class="form-group">
+                <label>Mata Pelajaran</label>
+                <input type="text" class="form-control" value="<?= esc($nilai['mata_pelajaran']) ?>" disabled style="background-color: #e2e8f0; cursor: not-allowed; color: var(--text-muted); font-weight: 600;">
+            </div>
+
             <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem;">
                 <!-- Nilai Tugas -->
                 <div class="form-group">

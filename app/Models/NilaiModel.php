@@ -14,6 +14,7 @@ class NilaiModel extends Model
     protected $allowedFields    = [
         'nis',
         'id_guru',
+        'mata_pelajaran',
         'nilai_tugas',
         'nilai_uts',
         'nilai_uas',
@@ -34,7 +35,7 @@ class NilaiModel extends Model
      */
     public function getNilaiWithDetails()
     {
-        return $this->select('nilai.*, siswa.nama as nama_siswa, siswa.kelas, guru.nama_guru, guru.mata_pelajaran')
+        return $this->select('nilai.*, siswa.nama as nama_siswa, siswa.kelas, guru.nama_guru')
             ->join('siswa', 'siswa.nis = nilai.nis')
             ->join('guru', 'guru.id_guru = nilai.id_guru')
             ->orderBy('nilai.created_at', 'DESC')
@@ -49,7 +50,7 @@ class NilaiModel extends Model
      */
     public function getNilaiByIdWithDetails($id)
     {
-        return $this->select('nilai.*, siswa.nama as nama_siswa, siswa.kelas, guru.nama_guru, guru.mata_pelajaran')
+        return $this->select('nilai.*, siswa.nama as nama_siswa, siswa.kelas, guru.nama_guru')
             ->join('siswa', 'siswa.nis = nilai.nis')
             ->join('guru', 'guru.id_guru = nilai.id_guru')
             ->where('nilai.id', $id)

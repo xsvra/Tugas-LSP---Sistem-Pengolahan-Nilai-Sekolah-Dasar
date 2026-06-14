@@ -17,7 +17,7 @@
     </button>
 </div>
 
-<div class="report-sheet">
+<div class="report-sheet !max-w-none w-full">
     <!-- Kop Surat Sekolah -->
     <div class="report-header">
         <h3 style="text-transform: uppercase; font-size: 0.9rem; letter-spacing: 1px; color: var(--text-muted); margin-bottom: 0.25rem;">Laporan Hasil Belajar Siswa (Rapor)</h3>
@@ -111,16 +111,16 @@
             </div>
         </div>
         <div>
-            <h5 style="font-weight: 700; font-size: 0.85rem; color: var(--text-muted); text-transform: uppercase; margin-bottom: 0.5rem;">Keputusan Kelulusan KKM</h5>
+            <h5 style="font-weight: 700; font-size: 0.85rem; color: var(--text-muted); text-transform: uppercase; margin-bottom: 0.5rem;">Keputusan Kelulusan</h5>
             <div style="margin-top: 0.5rem;">
                 <?php if ($statistik['rata_rata'] >= 75): ?>
                     <span class="badge badge-success" style="font-size: 1.1rem; padding: 0.4rem 1rem;">
-                        <i class="fa-solid fa-circle-check" style="margin-right: 0.25rem;"></i> LULUS KKM
+                        <i class="fa-solid fa-circle-check" style="margin-right: 0.25rem;"></i> LULUS
                     </span>
                     <p style="font-size: 0.75rem; color: var(--text-muted); margin-top: 0.5rem;">Siswa dinyatakan LULUS karena nilai rata-rata keseluruhan berada di atas KKM (75).</p>
                 <?php else: ?>
                     <span class="badge badge-danger" style="font-size: 1.1rem; padding: 0.4rem 1rem;">
-                        <i class="fa-solid fa-circle-xmark" style="margin-right: 0.25rem;"></i> TIDAK LULUS KKM
+                        <i class="fa-solid fa-circle-xmark" style="margin-right: 0.25rem;"></i> TIDAK LULUS
                     </span>
                     <p style="font-size: 0.75rem; color: var(--text-muted); margin-top: 0.5rem;">Siswa dinyatakan TIDAK LULUS karena nilai rata-rata keseluruhan berada di bawah KKM (75).</p>
                 <?php endif; ?>

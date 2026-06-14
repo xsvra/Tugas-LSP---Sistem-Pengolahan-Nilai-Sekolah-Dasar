@@ -6,6 +6,7 @@ class Nilai {
     private ?int $id;
     private Siswa $siswa;
     private Guru $guru;
+    private string $mataPelajaran;
     private float $nilaiTugas;
     private float $nilaiUts;
     private float $nilaiUas;
@@ -26,6 +27,7 @@ class Nilai {
         ?int $id,
         Siswa $siswa,
         Guru $guru,
+        string $mataPelajaran,
         float $nilaiTugas,
         float $nilaiUts,
         float $nilaiUas
@@ -40,6 +42,7 @@ class Nilai {
         $this->id = $id;
         $this->siswa = $siswa;
         $this->guru = $guru;
+        $this->mataPelajaran = $mataPelajaran;
         $this->nilaiTugas = $nilaiTugas;
         $this->nilaiUts = $nilaiUts;
         $this->nilaiUas = $nilaiUas;
@@ -78,6 +81,14 @@ class Nilai {
 
     public function setGuru(Guru $guru): void {
         $this->guru = $guru;
+    }
+
+    public function getMataPelajaran(): string {
+        return $this->mataPelajaran;
+    }
+
+    public function setMataPelajaran(string $mataPelajaran): void {
+        $this->mataPelajaran = $mataPelajaran;
     }
 
     public function getNilaiTugas(): float {
@@ -137,6 +148,7 @@ class Nilai {
             'id'               => $this->id,
             'nis'              => $this->siswa->getNis(),
             'id_guru'          => $this->guru->getIdGuru(),
+            'mata_pelajaran'   => $this->mataPelajaran,
             'nilai_tugas'      => $this->nilaiTugas,
             'nilai_uts'        => $this->nilaiUts,
             'nilai_uas'        => $this->nilaiUas,

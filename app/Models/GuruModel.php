@@ -8,7 +8,7 @@ class GuruModel extends Model
 {
     protected $table            = 'guru';
     protected $primaryKey       = 'id_guru';
-    protected $useAutoIncrement = true;
+    protected $useAutoIncrement = false;
     protected $returnType       = 'array';
     protected $protectFields    = true;
     protected $allowedFields    = [
@@ -22,6 +22,7 @@ class GuruModel extends Model
         'no_hp',
         'email',
         'mata_pelajaran',
+        'kelas_diajar',
         'pendidikan_terakhir',
         'status_kepegawaian',
         'tanggal_masuk',
@@ -36,7 +37,7 @@ class GuruModel extends Model
 
     // Validation
     protected $validationRules      = [
-        'id_guru'             => 'permit_empty|integer',
+        'id_guru'             => 'required|integer',
         'nik'                 => 'permit_empty',
         'nama_guru'           => 'permit_empty|max_length[100]',
         'jenis_kelamin'       => 'permit_empty|in_list[L,P]',
@@ -45,7 +46,8 @@ class GuruModel extends Model
         'alamat'              => 'permit_empty',
         'no_hp'               => 'permit_empty|max_length[20]',
         'email'               => 'permit_empty|valid_email|max_length[100]',
-        'mata_pelajaran'      => 'required|min_length[2]|max_length[100]',
+        'mata_pelajaran'      => 'required|min_length[2]|max_length[255]',
+        'kelas_diajar'        => 'permit_empty|max_length[255]',
         'pendidikan_terakhir' => 'permit_empty|max_length[50]',
         'status_kepegawaian'  => 'permit_empty|max_length[50]',
         'tanggal_masuk'       => 'permit_empty|valid_date[Y-m-d]',

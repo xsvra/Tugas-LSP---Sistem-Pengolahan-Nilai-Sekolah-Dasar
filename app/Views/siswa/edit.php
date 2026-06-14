@@ -31,6 +31,33 @@ $session_errors = session()->getFlashdata('errors');
                 <?php endif; ?>
             </div>
 
+            <!-- Tanggal Lahir Field -->
+            <div class="form-group">
+                <label for="tanggal_lahir">Tanggal Lahir</label>
+                <input type="date" name="tanggal_lahir" id="tanggal_lahir" class="form-control <?= (isset($session_errors['tanggal_lahir'])) ? 'is-invalid' : '' ?>" value="<?= old('tanggal_lahir', $siswa['tanggal_lahir']) ?>" required>
+                <?php if (isset($session_errors['tanggal_lahir'])): ?>
+                    <div class="invalid-feedback"><?= $session_errors['tanggal_lahir'] ?></div>
+                <?php endif; ?>
+            </div>
+
+            <!-- Tahun Masuk Field -->
+            <div class="form-group">
+                <label for="tahun_masuk">Tahun Masuk</label>
+                <input type="number" name="tahun_masuk" id="tahun_masuk" class="form-control <?= (isset($session_errors['tahun_masuk'])) ? 'is-invalid' : '' ?>" value="<?= old('tahun_masuk', $siswa['tahun_masuk']) ?>" placeholder="Contoh: 2026" required>
+                <?php if (isset($session_errors['tahun_masuk'])): ?>
+                    <div class="invalid-feedback"><?= $session_errors['tahun_masuk'] ?></div>
+                <?php endif; ?>
+            </div>
+
+            <!-- NISN Field -->
+            <div class="form-group">
+                <label for="nisn">Nomor Induk Siswa Nasional (NISN)</label>
+                <input type="text" name="nisn" id="nisn" class="form-control <?= (isset($session_errors['nisn'])) ? 'is-invalid' : '' ?>" value="<?= old('nisn', $siswa['nisn']) ?>" placeholder="Masukkan 10 digit NISN (Manual)" required>
+                <?php if (isset($session_errors['nisn'])): ?>
+                    <div class="invalid-feedback"><?= $session_errors['nisn'] ?></div>
+                <?php endif; ?>
+            </div>
+
 
             <!-- Kelas Field -->
             <div class="form-group">

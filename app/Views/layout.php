@@ -13,99 +13,101 @@
     <div class="app-container">
         <!-- Sidebar Navigation -->
         <aside class="sidebar no-print">
-            <div class="sidebar-brand">
-                <div class="sidebar-logo">SN</div>
-                <span class="sidebar-title">Sistem Nilai</span>
-            </div>
-            <ul class="sidebar-menu">
-                <?php if (session()->get('role') === 'admin'): ?>
-                    <li>
-                        <a href="<?= base_url('/') ?>" class="sidebar-link <?= current_url() == base_url('/') ? 'active' : '' ?>">
-                            <i class="fa-solid fa-chart-pie"></i>
-                            <span>Dashboard</span>
-                        </a>
-                    </li>
-                    <!-- Admin Menus -->
-                    <li>
-                        <a href="<?= base_url('/siswa') ?>" class="sidebar-link <?= strpos(current_url(), base_url('/siswa')) !== false ? 'active' : '' ?>">
-                            <i class="fa-solid fa-graduation-cap"></i>
-                            <span>Data Siswa</span>
-                        </a>
-                    </li>
-                    <li>
-                        <a href="<?= base_url('/guru') ?>" class="sidebar-link <?= strpos(current_url(), base_url('/guru')) !== false ? 'active' : '' ?>">
-                            <i class="fa-solid fa-chalkboard-user"></i>
-                            <span>Data Guru</span>
-                        </a>
-                    </li>
-                <?php endif; ?>
-
-                <?php if (session()->get('role') === 'guru'): ?>
-                    <!-- Guru Menus -->
-                    <li>
-                        <a href="<?= base_url('/profil/guru') ?>" class="sidebar-link <?= strpos(current_url(), base_url('/profil/guru')) !== false ? 'active' : '' ?>">
-                            <i class="fa-solid fa-address-card"></i>
-                            <span>Data Diri</span>
-                        </a>
-                    </li>
-                    <li>
-                        <a href="<?= base_url('/nilai') ?>" class="sidebar-link <?= strpos(current_url(), base_url('/nilai')) !== false ? 'active' : '' ?>">
-                            <i class="fa-solid fa-file-invoice"></i>
-                            <span>Input Nilai</span>
-                        </a>
-                    </li>
-                    <li>
-                        <a href="<?= base_url('/laporan') ?>" class="sidebar-link <?= current_url() == base_url('/laporan') ? 'active' : '' ?>">
-                            <i class="fa-solid fa-file-contract"></i>
-                            <span>Laporan Nilai</span>
-                        </a>
-                    </li>
-                    <li>
-                        <a href="<?= base_url('/banding/tinjau') ?>" class="sidebar-link <?= strpos(current_url(), base_url('/banding/tinjau')) !== false ? 'active' : '' ?>">
-                            <i class="fa-solid fa-comments-dollar" style="transform: scaleX(-1);"></i>
-                            <span>Tinjau Banding</span>
-                        </a>
-                    </li>
-                <?php endif; ?>
-
-                <?php if (session()->get('role') === 'siswa'): ?>
-                    <!-- Siswa Menus -->
-                    <li>
-                        <a href="<?= base_url('/profil/siswa') ?>" class="sidebar-link <?= strpos(current_url(), base_url('/profil/siswa')) !== false ? 'active' : '' ?>">
-                            <i class="fa-solid fa-address-card"></i>
-                            <span>Data Diri</span>
-                        </a>
-                    </li>
-                    <?php if (session()->get('ref_id')): ?>
+            <div class="sidebar-sticky-wrapper">
+                <div class="sidebar-brand">
+                    <div class="sidebar-logo">SN</div>
+                    <span class="sidebar-title">Sistem Nilai</span>
+                </div>
+                <ul class="sidebar-menu">
+                    <?php if (session()->get('role') === 'admin'): ?>
                         <li>
-                            <a href="<?= base_url('/laporan/rapor/' . session()->get('ref_id')) ?>" class="sidebar-link <?= strpos(current_url(), base_url('/laporan/rapor')) !== false ? 'active' : '' ?>">
-                                <i class="fa-solid fa-file-invoice"></i>
-                                <span>Lihat Rapor</span>
+                            <a href="<?= base_url('/') ?>" class="sidebar-link <?= current_url() == base_url('/') ? 'active' : '' ?>">
+                                <i class="fa-solid fa-chart-pie"></i>
+                                <span>Dashboard</span>
+                            </a>
+                        </li>
+                        <!-- Admin Menus -->
+                        <li>
+                            <a href="<?= base_url('/siswa') ?>" class="sidebar-link <?= strpos(current_url(), base_url('/siswa')) !== false ? 'active' : '' ?>">
+                                <i class="fa-solid fa-graduation-cap"></i>
+                                <span>Data Siswa</span>
+                            </a>
+                        </li>
+                        <li>
+                            <a href="<?= base_url('/guru') ?>" class="sidebar-link <?= strpos(current_url(), base_url('/guru')) !== false ? 'active' : '' ?>">
+                                <i class="fa-solid fa-chalkboard-user"></i>
+                                <span>Data Guru</span>
                             </a>
                         </li>
                     <?php endif; ?>
+
+                    <?php if (session()->get('role') === 'guru'): ?>
+                        <!-- Guru Menus -->
+                        <li>
+                            <a href="<?= base_url('/profil/guru') ?>" class="sidebar-link <?= strpos(current_url(), base_url('/profil/guru')) !== false ? 'active' : '' ?>">
+                                <i class="fa-solid fa-address-card"></i>
+                                <span>Data Diri</span>
+                            </a>
+                        </li>
+                        <li>
+                            <a href="<?= base_url('/nilai') ?>" class="sidebar-link <?= strpos(current_url(), base_url('/nilai')) !== false ? 'active' : '' ?>">
+                                <i class="fa-solid fa-file-invoice"></i>
+                                <span>Input Nilai</span>
+                            </a>
+                        </li>
+                        <li>
+                            <a href="<?= base_url('/laporan') ?>" class="sidebar-link <?= current_url() == base_url('/laporan') ? 'active' : '' ?>">
+                                <i class="fa-solid fa-file-contract"></i>
+                                <span>Laporan Nilai</span>
+                            </a>
+                        </li>
+                        <li>
+                            <a href="<?= base_url('/banding/tinjau') ?>" class="sidebar-link <?= strpos(current_url(), base_url('/banding/tinjau')) !== false ? 'active' : '' ?>">
+                                <i class="fa-solid fa-comments-dollar" style="transform: scaleX(-1);"></i>
+                                <span>Tinjau Banding</span>
+                            </a>
+                        </li>
+                    <?php endif; ?>
+
+                    <?php if (session()->get('role') === 'siswa'): ?>
+                        <!-- Siswa Menus -->
+                        <li>
+                            <a href="<?= base_url('/profil/siswa') ?>" class="sidebar-link <?= strpos(current_url(), base_url('/profil/siswa')) !== false ? 'active' : '' ?>">
+                                <i class="fa-solid fa-address-card"></i>
+                                <span>Data Diri</span>
+                            </a>
+                        </li>
+                        <?php if (session()->get('ref_id')): ?>
+                            <li>
+                                <a href="<?= base_url('/laporan/rapor/' . session()->get('ref_id')) ?>" class="sidebar-link <?= strpos(current_url(), base_url('/laporan/rapor')) !== false ? 'active' : '' ?>">
+                                    <i class="fa-solid fa-file-invoice"></i>
+                                    <span>Lihat Rapor</span>
+                                </a>
+                            </li>
+                        <?php endif; ?>
+                        <li>
+                            <a href="<?= base_url('/banding/riwayat') ?>" class="sidebar-link <?= strpos(current_url(), base_url('/banding/riwayat')) !== false ? 'active' : '' ?>">
+                                <i class="fa-solid fa-clock-rotate-left"></i>
+                                <span>Riwayat Banding</span>
+                            </a>
+                        </li>
+                    <?php endif; ?>
+
                     <li>
-                        <a href="<?= base_url('/banding/riwayat') ?>" class="sidebar-link <?= strpos(current_url(), base_url('/banding/riwayat')) !== false ? 'active' : '' ?>">
-                            <i class="fa-solid fa-clock-rotate-left"></i>
-                            <span>Riwayat Banding</span>
+                        <a href="<?= base_url('/dokumen-rancangan') ?>" class="sidebar-link <?= strpos(current_url(), base_url('/dokumen-rancangan')) !== false ? 'active' : '' ?>">
+                            <i class="fa-solid fa-book-bookmark"></i>
+                            <span>Dokumen Tugas 1</span>
                         </a>
                     </li>
-                <?php endif; ?>
-
-                <li>
-                    <a href="<?= base_url('/dokumen-rancangan') ?>" class="sidebar-link <?= strpos(current_url(), base_url('/dokumen-rancangan')) !== false ? 'active' : '' ?>">
-                        <i class="fa-solid fa-book-bookmark"></i>
-                        <span>Dokumen Tugas 1</span>
-                    </a>
-                </li>
-                
-                <li style="margin-top: auto;">
-                    <a href="<?= base_url('/logout') ?>" class="sidebar-link" onclick="return confirm('Apakah Anda yakin ingin keluar?');" style="color: var(--danger-light); background: rgba(239, 68, 68, 0.05);">
-                        <i class="fa-solid fa-right-from-bracket" style="color: var(--danger);"></i>
-                        <span>Logout</span>
-                    </a>
-                </li>
-            </ul>
+                    
+                    <li style="margin-top: auto;">
+                        <a href="<?= base_url('/logout') ?>" class="sidebar-link" onclick="return confirm('Apakah Anda yakin ingin keluar?');" style="color: var(--danger-light); background: rgba(239, 68, 68, 0.05);">
+                            <i class="fa-solid fa-right-from-bracket" style="color: var(--danger);"></i>
+                            <span>Logout</span>
+                        </a>
+                    </li>
+                </ul>
+            </div>
         </aside>
 
         <!-- Main Content Area -->

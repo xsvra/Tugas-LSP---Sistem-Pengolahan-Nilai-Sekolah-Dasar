@@ -16,9 +16,16 @@ class NilaiController extends BaseController
         $nilaiModel = new NilaiModel();
         $role = session()->get('role');
         $idGuru = session()->get('ref_id');
+        $kelasDiajar = [];
+        $mapelDiajar = [];
 
         if ($role === 'guru') {
-            $nilai = $nilaiModel->select('nilai.*, siswa.nama as nama_siswa, siswa.kelas, guru.nama_guru, guru.mata_pelajaran')
+            $guruModel = new GuruModel();
+            $guru = $guruModel->find($idGuru);
+            $kelasDiajar = !empty($guru['kelas_diajar']) ? explode(',', $guru['kelas_diajar']) : [];
+            $mapelDiajar = !empty($guru['mata_pelajaran']) ? explode(',', $guru['mata_pelajaran']) : [];
+
+            $nilai = $nilaiModel->select('nilai.*, siswa.nama as nama_siswa, siswa.kelas, guru.nama_guru')
                 ->join('siswa', 'siswa.nis = nilai.nis')
                 ->join('guru', 'guru.id_guru = nilai.id_guru')
                 ->where('nilai.id_guru', $idGuru)
@@ -30,21 +37,67 @@ class NilaiController extends BaseController
 
         $data = [
             'title' => 'Daftar Nilai Siswa',
-            'nilai' => $nilai
+            'nilai' => $nilai,
+            'kelasDiajar' => $kelasDiajar,
+            'mapelDiajar' => $mapelDiajar
         ];
         return view('nilai/index', $data);
     }
 
     public function create()
     {
-        $siswaModel = new SiswaModel();
+        $role = session()->get('role');
+        $idGuru = session()->get('ref_id');
+        $mapelDiajar = [];
+        $kelasDiajar = [];
+        $mappings = [];
+
+        if ($role === 'guru') {
+            $guruModel = new GuruModel();
+            $guru = $guruModel->find($idGuru);
+            $mapelDiajar = !empty($guru['mata_pelajaran']) ? explode(',', $guru['mata_pelajaran']) : [];
+            $kelasDiajar = !empty($guru['kelas_diajar']) ? explode(',', $guru['kelas_diajar']) : [];
+
+            $db = \Config\Database::connect();
+            $mappings = $db->table('guru_mapel_kelas')
+                ->where('id_guru', $idGuru)
+                ->get()
+                ->getResultArray();
+        }
 
         $data = [
-            'title'      => 'Input Nilai Siswa',
-            'siswa'      => $siswaModel->where('status_siswa', 'Aktif')->findAll(),
-            'validation' => \Config\Services::validation()
+            'title'        => 'Input Nilai Siswa',
+            'mapelDiajar'  => $mapelDiajar,
+            'kelasDiajar'  => $kelasDiajar,
+            'mappings'     => $mappings,
+            'validation'   => \Config\Services::validation()
         ];
         return view('nilai/create', $data);
+    }
+
+    /**
+     * AJAX endpoint: get students by class (filtered by teacher's assigned classes).
+     */
+    public function getSiswaByKelas($kelas)
+    {
+        $siswaModel = new SiswaModel();
+        $role = session()->get('role');
+        $idGuru = session()->get('ref_id');
+
+        // Security: only allow classes that the guru teaches
+        if ($role === 'guru') {
+            $db = \Config\Database::connect();
+            $mappingExists = $db->table('guru_mapel_kelas')
+                ->where('id_guru', $idGuru)
+                ->where('kelas', $kelas)
+                ->countAllResults();
+            if ($mappingExists === 0) {
+                return $this->response->setJSON([]);
+            }
+        }
+
+        $siswa = $siswaModel->where('status_siswa', 'Aktif')->where('kelas', $kelas)->orderBy('nama', 'ASC')->findAll();
+        return $this->response->setJSON($siswa);
     }
 
     public function store()
@@ -54,10 +107,11 @@ class NilaiController extends BaseController
         $nilaiModel = new NilaiModel();
 
         $rules = [
-            'nis'         => 'required',
-            'nilai_tugas' => 'required|numeric|greater_than_equal_to[0]|less_than_equal_to[100]',
-            'nilai_uts'   => 'required|numeric|greater_than_equal_to[0]|less_than_equal_to[100]',
-            'nilai_uas'   => 'required|numeric|greater_than_equal_to[0]|less_than_equal_to[100]'
+            'nis'             => 'required',
+            'mata_pelajaran'  => 'required',
+            'nilai_tugas'     => 'required|numeric|greater_than_equal_to[0]|less_than_equal_to[100]',
+            'nilai_uts'       => 'required|numeric|greater_than_equal_to[0]|less_than_equal_to[100]',
+            'nilai_uas'       => 'required|numeric|greater_than_equal_to[0]|less_than_equal_to[100]'
         ];
 
         if (!$this->validate($rules)) {
@@ -65,6 +119,7 @@ class NilaiController extends BaseController
         }
 
         $nis = $this->request->getPost('nis');
+        $mataPelajaran = $this->request->getPost('mata_pelajaran');
         $idGuru = session()->get('ref_id');
         
         $dbSiswa = $siswaModel->where('nis', $nis)->first();
@@ -72,6 +127,26 @@ class NilaiController extends BaseController
 
         if (!$dbSiswa || !$dbGuru) {
             return redirect()->back()->withInput()->with('error', 'Siswa atau Guru tidak ditemukan.');
+        }
+
+        // Validate that this teacher actually teaches this subject in this student's class
+        $db = \Config\Database::connect();
+        $mappingExists = $db->table('guru_mapel_kelas')
+            ->where('id_guru', $idGuru)
+            ->where('mata_pelajaran', $mataPelajaran)
+            ->where('kelas', $dbSiswa['kelas'])
+            ->countAllResults();
+        if ($mappingExists === 0) {
+            return redirect()->back()->withInput()->with('error', 'Anda tidak mengajar mata pelajaran "' . $mataPelajaran . '" di kelas ' . $dbSiswa['kelas'] . '.');
+        }
+
+        // Validate: no duplicate (same nis + same guru + same mapel)
+        $existing = $nilaiModel->where('nis', $nis)
+            ->where('id_guru', $idGuru)
+            ->where('mata_pelajaran', $mataPelajaran)
+            ->first();
+        if ($existing) {
+            return redirect()->back()->withInput()->with('error', 'Nilai untuk siswa ini pada mata pelajaran "' . $mataPelajaran . '" sudah ada. Silakan edit nilai yang sudah ada.');
         }
 
         try {
@@ -83,6 +158,7 @@ class NilaiController extends BaseController
                 null,
                 $siswaObj,
                 $guruObj,
+                $mataPelajaran,
                 (float)$this->request->getPost('nilai_tugas'),
                 (float)$this->request->getPost('nilai_uts'),
                 (float)$this->request->getPost('nilai_uas')
@@ -91,7 +167,7 @@ class NilaiController extends BaseController
             // Simpan ke database menggunakan representasi array objek OOP
             $nilaiModel->save($nilaiObj->toArray());
 
-            return redirect()->to('/nilai')->with('success', 'Data nilai berhasil ditambahkan.');
+            return redirect()->to('/nilai')->with('success', 'Data nilai ' . $mataPelajaran . ' berhasil ditambahkan.');
         } catch (\Exception $e) {
             return redirect()->back()->withInput()->with('error', $e->getMessage());
         }
@@ -152,6 +228,8 @@ class NilaiController extends BaseController
 
         $nis = $this->request->getPost('nis');
         $idGuru = session()->get('ref_id');
+        // Use the existing mata_pelajaran from the record (not editable)
+        $mataPelajaran = $nilai['mata_pelajaran'];
         
         $dbSiswa = $siswaModel->where('nis', $nis)->first();
         $dbGuru = $guruModel->find($idGuru);
@@ -169,6 +247,7 @@ class NilaiController extends BaseController
                 $id,
                 $siswaObj,
                 $guruObj,
+                $mataPelajaran,
                 (float)$this->request->getPost('nilai_tugas'),
                 (float)$this->request->getPost('nilai_uts'),
                 (float)$this->request->getPost('nilai_uas')

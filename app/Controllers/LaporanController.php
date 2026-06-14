@@ -17,7 +17,7 @@ class LaporanController extends BaseController
         $idGuru = session()->get('ref_id');
 
         if ($role === 'guru') {
-            $daftarNilai = $nilaiModel->select('nilai.*, siswa.nama as nama_siswa, siswa.kelas, guru.nama_guru, guru.mata_pelajaran')
+            $daftarNilai = $nilaiModel->select('nilai.*, siswa.nama as nama_siswa, siswa.kelas, guru.nama_guru')
                 ->join('siswa', 'siswa.nis = nilai.nis')
                 ->join('guru', 'guru.id_guru = nilai.id_guru')
                 ->where('nilai.id_guru', $idGuru)
@@ -100,7 +100,7 @@ class LaporanController extends BaseController
         }
 
         // Ambil semua nilai untuk siswa ini
-        $nilai = $nilaiModel->select('nilai.*, guru.nama_guru, guru.mata_pelajaran')
+        $nilai = $nilaiModel->select('nilai.*, guru.nama_guru')
             ->join('guru', 'guru.id_guru = nilai.id_guru')
             ->where('nilai.nis', $nis)
             ->findAll();

@@ -32,19 +32,21 @@ try {
     // 1. Clean up potential old test records
     $userModel->where('username', 'claratest')->delete();
     $userModel->where('username', 'ruditest')->delete();
-    $siswaModel->where('nis', '999')->delete();
-    $guruModel->where('id_guru', 999)->delete();
+    $siswaModel->where('nis', '2619103999')->delete();
+    $guruModel->where('id_guru', 26019999)->delete();
 
     // 2. Test Siswa & Guru Registration Flow
     echo "[TEST 1] Menguji Registrasi Siswa & Guru (Transaksi)...\n";
     
     // Siswa Registration
     $siswaSaved = $siswaModel->insert([
-        'nis'           => '999',
-        'nisn'          => '0000000000',
+        'nis'           => '2619103999',
+        'nisn'          => '0089999999',
         'nama'          => 'Clara Test',
         'jenis_kelamin' => 'P',
-        'kelas'         => '3'
+        'kelas'         => '3',
+        'tahun_masuk'   => '2026',
+        'tanggal_lahir' => '2008-05-15'
     ]);
     if (!$siswaSaved) {
         echo "Siswa save errors:\n";
@@ -55,7 +57,7 @@ try {
         'username' => 'claratest',
         'password' => password_hash('siswa123', PASSWORD_BCRYPT),
         'role'     => 'siswa',
-        'ref_id'   => '999'
+        'ref_id'   => '2619103999'
     ]);
     if (!$userSiswaSaved) {
         echo "User siswa save errors:\n";
@@ -64,11 +66,13 @@ try {
 
     // Guru Registration
     $guruSaved = $guruModel->insert([
-        'id_guru'        => 999,
-        'nik'            => '3201234567890123',
-        'nama_guru'      => 'Rudi Test',
-        'jenis_kelamin'  => 'L',
-        'mata_pelajaran' => 'Fisika'
+        'id_guru'            => 26019999,
+        'nik'                => '3201234567890123',
+        'nama_guru'          => 'Rudi Test',
+        'jenis_kelamin'      => 'L',
+        'mata_pelajaran'     => 'Fisika',
+        'status_kepegawaian' => 'PNS',
+        'tanggal_masuk'      => '2026-06-14'
     ]);
     if (!$guruSaved) {
         echo "Guru save errors:\n";
@@ -79,7 +83,7 @@ try {
         'username' => 'ruditest',
         'password' => password_hash('guru123', PASSWORD_BCRYPT),
         'role'     => 'guru',
-        'ref_id'   => 999
+        'ref_id'   => 26019999
     ]);
     if (!$userGuruSaved) {
         echo "User guru save errors:\n";
@@ -107,8 +111,8 @@ try {
     // 4. Test Grade Insertion
     echo "\n[TEST 3] Menguji Guru menginput nilai untuk Siswa...\n";
     $nilaiId = $nilaiModel->insert([
-        'nis'              => '999',
-        'id_guru'          => 999,
+        'nis'              => '2619103999',
+        'id_guru'          => 26019999,
         'nilai_tugas'      => 60.00,
         'nilai_uts'        => 70.00,
         'nilai_uas'        => 65.00,

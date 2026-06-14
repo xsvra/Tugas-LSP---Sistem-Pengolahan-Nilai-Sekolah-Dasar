@@ -86,8 +86,8 @@
         </div>
     </div>
 
-    <!-- Recent Grades Table -->
-    <div style="display: flex; flex-direction: column; gap: 0.75rem;">
+    <!-- Recent Grades Table Card -->
+    <div class="card" style="display: flex; flex-direction: column; gap: 1rem; height: 100%; min-height: 0;">
         <div class="section-header" style="display: flex; justify-content: space-between; align-items: center; gap: 1rem; flex-wrap: wrap;">
             <h3 class="section-title" style="margin: 0;">Nilai Terbaru Diinput</h3>
             <div style="position: relative; display: flex; align-items: center;">
@@ -96,8 +96,8 @@
             </div>
         </div>
 
-        <div class="table-container">
-            <div class="table-wrapper" style="max-height: 290px; overflow-y: auto;">
+        <div class="table-container" style="flex: 1; display: flex; flex-direction: column; min-height: 0; border: 1px solid var(--border-color); border-radius: var(--border-radius-md); box-shadow: none;">
+            <div class="table-wrapper" style="overflow-y: auto; flex: 1; max-height: 250px;">
                 <table class="custom-table">
                     <thead>
                         <tr>

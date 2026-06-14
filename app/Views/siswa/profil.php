@@ -92,7 +92,7 @@ $session_errors = session()->getFlashdata('errors');
                         <!-- Tanggal Lahir -->
                         <div class="form-group">
                             <label for="tanggal_lahir">Tanggal Lahir</label>
-                            <input type="date" name="tanggal_lahir" id="tanggal_lahir" class="form-control <?= (isset($session_errors['tanggal_lahir'])) ? 'is-invalid' : '' ?>" value="<?= old('tanggal_lahir', $siswa['tanggal_lahir']) ?>">
+                            <input type="date" name="tanggal_lahir" id="tanggal_lahir" class="form-control <?= (isset($session_errors['tanggal_lahir'])) ? 'is-invalid' : '' ?>" value="<?= old('tanggal_lahir', $siswa['tanggal_lahir']) ?>" required>
                             <?php if (isset($session_errors['tanggal_lahir'])): ?>
                                 <div class="invalid-feedback"><?= $session_errors['tanggal_lahir'] ?></div>
                             <?php endif; ?>
@@ -101,7 +101,7 @@ $session_errors = session()->getFlashdata('errors');
                         <!-- Tahun Masuk -->
                         <div class="form-group">
                             <label for="tahun_masuk">Tahun Masuk</label>
-                            <input type="text" name="tahun_masuk" id="tahun_masuk" class="form-control <?= (isset($session_errors['tahun_masuk'])) ? 'is-invalid' : '' ?>" value="<?= old('tahun_masuk', $siswa['tahun_masuk']) ?>" placeholder="Contoh: 2025">
+                            <input type="text" name="tahun_masuk" id="tahun_masuk" class="form-control <?= (isset($session_errors['tahun_masuk'])) ? 'is-invalid' : '' ?>" value="<?= old('tahun_masuk', $siswa['tahun_masuk']) ?>" placeholder="Contoh: 2025" required>
                             <?php if (isset($session_errors['tahun_masuk'])): ?>
                                 <div class="invalid-feedback"><?= $session_errors['tahun_masuk'] ?></div>
                             <?php endif; ?>

@@ -88,6 +88,13 @@ $session_errors = session()->getFlashdata('errors');
                             <input type="hidden" name="mata_pelajaran" value="<?= esc($guru['mata_pelajaran']) ?>">
                         </div>
 
+                        <!-- Kelas Diajar (Read-only) -->
+                        <div class="form-group">
+                            <label for="kelas_diajar">Kelas Diajar</label>
+                            <input type="text" class="form-control" value="<?= esc($guru['kelas_diajar']) ?>" disabled style="background-color: #e2e8f0; cursor: not-allowed; color: var(--text-muted);">
+                            <input type="hidden" name="kelas_diajar" value="<?= esc($guru['kelas_diajar']) ?>">
+                        </div>
+
                         <!-- Tempat Lahir -->
                         <div class="form-group">
                             <label for="tempat_lahir">Tempat Lahir</label>
@@ -195,6 +202,7 @@ $session_errors = session()->getFlashdata('errors');
                         <div style="font-size: 0.85rem; display: flex; flex-direction: column; gap: 0.5rem;">
                             <div><strong style="color: var(--text-muted);">ID Guru:</strong> <span style="font-weight: 600; color: var(--text-main);"><?= esc($guru['id_guru']) ?></span></div>
                             <div><strong style="color: var(--text-muted);">Mata Pelajaran:</strong> <span style="font-weight: 600; color: var(--text-main);"><?= esc($guru['mata_pelajaran']) ?></span></div>
+                            <div><strong style="color: var(--text-muted);">Kelas Diajar:</strong> <span style="font-weight: 600; color: var(--text-main);"><?= esc($guru['kelas_diajar']) ?></span></div>
                         </div>
                     </div>
                 </div>
@@ -249,7 +257,7 @@ $session_errors = session()->getFlashdata('errors');
                     <div style="background: #ffffff; border: 1px solid var(--border-color); border-radius: var(--border-radius-lg); padding: 1.5rem; box-shadow: var(--shadow-sm);">
                         <h4 style="margin: 0 0 1.25rem 0; font-size: 1.05rem; color: var(--secondary); font-family: var(--font-heading); font-weight: 700; border-bottom: 1.5px solid var(--border-color); padding-bottom: 0.5rem; display: flex; align-items: center; gap: 0.5rem;">
                             <i class="fa-solid fa-graduation-cap" style="font-size: 0.95rem;"></i>
-                            <span>Pendidikan & Status Kepegawaian</span>
+                            <span>Pendidikan & Kepegawaian</span>
                         </h4>
 
                         <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1.25rem; font-size: 0.925rem;">

@@ -36,8 +36,8 @@ class SiswaModel extends Model
 
     // Validation
     protected $validationRules      = [
-        'nis'           => 'required|min_length[3]|max_length[20]',
-        'nisn'          => 'permit_empty|max_length[20]',
+        'nis'           => 'required|numeric|exact_length[10]',
+        'nisn'          => 'required|numeric|exact_length[10]',
         'nama'          => 'required|min_length[2]|max_length[100]',
         'jenis_kelamin' => 'required|in_list[L,P]',
         'tempat_lahir'  => 'permit_empty|max_length[100]',
